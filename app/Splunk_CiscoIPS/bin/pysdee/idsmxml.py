@@ -1,9 +1,10 @@
-import sys
-import xml.dom.minidom
+
+import xml.dom.minidom,sys,datetime
 
 class Participant:
 
 	def __init__(self, **kwargs):
+
 		try: self.xml = kwargs['xml']
 		except: self.xml = ''
 
@@ -19,6 +20,7 @@ class Participant:
 class Signature:
 
 	def __init__(self, **kwargs):
+
 		try: self.xml = kwargs['xml']
 		except: self.xml = ''
 	
@@ -40,6 +42,7 @@ class Signature:
 class Alert:
 
 	def __init__(self, **kwargs):
+
 		try: self.xml = kwargs['xml']
 		except: self.xml = ''
 
@@ -92,6 +95,7 @@ class Alert:
 		except: self.protocol = ''
 
 		try: self.intgroup = kwargs['interfaceGroup']
+
 		except: self.intgroup = ''
 
 		try: self.intgroup = kwargs['vlan']
@@ -109,14 +113,9 @@ class Alert:
 		try: self.globalcorrelation = kwargs['globalCorrelation']
 		except:	self.globalcorrelation = ''
 
-#		try: self.isDropped = kwargs['isDropped']
-#		except:	self.isDropped = ''
-
-		# Add optional context, actions, and summary fields.
-		# Credited to Andrew Garvin.
 		try: self.context = kwargs['context']
 		except: self.context = 'NULL'
-		
+
 		try: self.actions = kwargs['actions']
 		except: self.actions = 'NULL'
 
@@ -160,6 +159,7 @@ class Alert:
 		except: self.initialAlert = 'NULL'
 
 def build_global(node):
+
 	alert = Alert()
 	alert.xml = node.toxml()
 	alert.eventid = node.attributes['eventId'].nodeValue
@@ -170,7 +170,8 @@ def build_global(node):
 	alert.appname = node.getElementsByTagName('sd:originator')[0].getElementsByTagName('cid:appName')[0].firstChild.wholeText
 	alert.appInstanceId = node.getElementsByTagName('sd:originator')[0].getElementsByTagName('cid:appInstanceId')[0].firstChild.wholeText
 
-	alert.alert_time = node.getElementsByTagName('sd:time')[0].firstChild.wholeText
+	#alert.alert_time = node.getElementsByTagName('sd:time')[0].firstChild.wholeText
+	alert.alert_time = str(datetime.datetime.fromtimestamp(int(node.getElementsByTagName('sd:time')[0].firstChild.wholeText)/1000000000))
 	alert.riskrating = node.getElementsByTagName('cid:riskRatingValue')[0].firstChild.wholeText
 	alert.threatrating = node.getElementsByTagName('cid:threatRatingValue')[0].firstChild.wholeText
 	alert.targetvaluerating = node.getElementsByTagName('cid:riskRatingValue')[0].attributes['targetValueRating'].nodeValue
@@ -180,78 +181,100 @@ def build_global(node):
 	alert.intgroup = node.getElementsByTagName('sd:interfaceGroup')[0].firstChild.wholeText
 	alert.vlan = node.getElementsByTagName('sd:vlan')[0].firstChild.wholeText
 
-#	try:
-#		alert.isDropped = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:droppedPacket')[0].firstChild.wholeText
-#	except: alert.isDropped = "NULL"
-
-	# Add optional context and actions.
-	# Credited to Andrew Garvin.
-	try: alert.context = node.getElementsByTagName('cid:interface')[0].attributes['context'].nodeValue
+	try:
+		alert.context = node.getElementsByTagName('cid:interface')[0].attributes['context'].nodeValue
 	except:	alert.context = "NULL"
 
-	try: alert.ipLoggingActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:ipLoggingActivated')[0].firstChild.wholeText
+	try:
+		alert.ipLoggingActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:ipLoggingActivated')[0].firstChild.wholeText
 	except: alert.ipLoggingActivated = "NULL"
 
-	try: alert.shunRequested = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:shunRequested')[0].firstChild.wholeText
+	try:
+		alert.shunRequested = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:shunRequested')[0].firstChild.wholeText
 	except: alert.shunRequested = "NULL"
 
-	try: alert.droppedPacket = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:droppedPacket')[0].firstChild.wholeText
+	try:
+		alert.droppedPacket = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('sd:droppedPacket')[0].firstChild.wholeText
 	except: alert.droppedPacket = "NULL"
 
-	try: alert.deniedAttacker = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:deniedAttacker')[0].firstChild.wholeText
+	try:
+		alert.deniedAttacker = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:deniedAttacker')[0].firstChild.wholeText
 	except: alert.deniedAttacker = "NULL"
 
-	try: alert.blockConnectionRequested = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:blockConnectionRequested')[0].firstChild.wholeText
+	try:
+		alert.blockConnectionRequested = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:blockConnectionRequested')[0].firstChild.wholeText
 	except: alert.blockConnectionRequested = "NULL"
 
-	try: alert.logAttackerPacketsActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:logAttackerPacketsActivated')[0].firstChild.wholeText
+	try:
+		alert.logAttackerPacketsActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:logAttackerPacketsActivated')[0].firstChild.wholeText
 	except: alert.logAttackerPacketsActivated = "NULL"
 
-	try: alert.logVictimPacketsActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:logVictimPacketsActivated')[0].firstChild.wholeText
+	try:
+		alert.logVictimPacketsActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:logVictimPacketsActivated')[0].firstChild.wholeText
 	except: alert.logVictimPacketsActivated = "NULL"
 
-	try: alert.logPairPacketsActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:logPairPacketsActivated')[0].firstChild.wholeText
+	try:
+		alert.logPairPacketsActivated = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:logPairPacketsActivated')[0].firstChild.wholeText
 	except: alert.logPairPacketsActivated = "NULL"
 
-	try: alert.snmpTrapRequested = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:snmpTrapRequested')[0].firstChild.wholeText
+	try:
+		alert.snmpTrapRequested = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:snmpTrapRequested')[0].firstChild.wholeText
 	except: alert.snmpTrapRequested = "NULL"
 
-	try: alert.deniedAttackerServicePair = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:deniedAttackerServicePair')[0].firstChild.wholeText
+	try:
+		alert.deniedAttackerServicePair = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:deniedAttackerServicePair')[0].firstChild.wholeText
 	except: alert.deniedAttackerServicePair = "NULL"
 
-	try: alert.deniedAttackerVictimPair = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:deniedAttackerVictimPair')[0].firstChild.wholeText
+	try:
+		alert.deniedAttackerVictimPair = node.getElementsByTagName('sd:actions')[0].getElementsByTagName('cid:deniedAttackerVictimPair')[0].firstChild.wholeText
 	except: alert.deniedAttackerVictimPair = "NULL"
 
 	try:
 		actionsList = []
-		if alert.ipLoggingActivated!="NULL": actionsList.append("ipLoggingActivated")
-		if alert.shunRequested!="NULL": actionsList.append("shunRequested")
-		if alert.droppedPacket!="NULL": actionsList.append("droppedPacket")
-		if alert.deniedAttacker!="NULL": actionsList.append("deniedAttacker")
-		if alert.logAttackerPacketsActivated!="NULL": actionsList.append("logAttackerPacketsActivated")
-		if alert.logVictimPacketsActivated!="NULL": actionsList.append("logVictimPacketsActivated")
-		if alert.logPairPacketsActivated!="NULL": actionsList.append("logPairPacketsActivated")
-		if alert.snmpTrapRequested!="NULL": actionsList.append("snmpTrapRequested")
-		if alert.blockConnectionRequested!="NULL": actionsList.append("blockConnectionRequested")
-		if alert.deniedAttackerServicePair!="NULL": actionsList.append("deniedAttackerServicePair")
-		if alert.deniedAttackerVictimPair!="NULL": actionsList.append("deniedAttackerVictimPair")
+		if alert.ipLoggingActivated!="NULL":
+			actionsList.append("ipLoggingActivated")
+		if alert.shunRequested!="NULL":
+			actionsList.append("shunRequested")
+		if alert.droppedPacket!="NULL":
+			actionsList.append("droppedPacket")
+		if alert.deniedAttacker!="NULL":
+			actionsList.append("deniedAttacker")
+		if alert.logAttackerPacketsActivated!="NULL":
+			actionsList.append("logAttackerPacketsActivated")
+		if alert.logVictimPacketsActivated!="NULL":
+			actionsList.append("logVictimPacketsActivated")
+		if alert.logPairPacketsActivated!="NULL":
+			actionsList.append("logPairPacketsActivated")
+		if alert.snmpTrapRequested!="NULL":
+			actionsList.append("snmpTrapRequested")
+		if alert.blockConnectionRequested!="NULL":
+			actionsList.append("blockConnectionRequested")
+		if alert.deniedAttackerServicePair!="NULL":
+			actionsList.append("deniedAttackerServicePair")
+		if alert.deniedAttackerVictimPair!="NULL":
+			actionsList.append("deniedAttackerVictimPair")
 		if len(actionsList) != 0:
 			alert.actions = ",".join(actionsList)
 	except: alert.actions = "NULL"
 
-	try: alert.summaryCount = node.getElementsByTagName('cid:summary')[0].firstChild.wholeText
+	try:
+		alert.summaryCount = node.getElementsByTagName('cid:summary')[0].firstChild.wholeText
 	except: alert.summaryCount = "NULL"
 
-	try: alert.initialAlert = node.getElementsByTagName('cid:summary')[0].attributes['cid:initialAlert'].nodeValue
+	try:
+		alert.initialAlert = node.getElementsByTagName('cid:summary')[0].attributes['cid:initialAlert'].nodeValue
 	except: alert.initialAlert = "NULL"
 
-	try:  alert.triggerpacket = node.getElementsByTagName('cid:triggerPacket')[0].firstChild.wholeText
+	try: 
+		alert.triggerpacket = node.getElementsByTagName('cid:triggerPacket')[0].firstChild.wholeText
 	except: alert.triggerpacket = "NULL"
 	
-	try: alert.fromtarget = node.getElementsByTagName('cid:context')[0].getElementsByTagName('cid:fromTarget')[0].firstChild.wholeText
+	try:
+		alert.fromtarget = node.getElementsByTagName('cid:context')[0].getElementsByTagName('cid:fromTarget')[0].firstChild.wholeText
 	except:	alert.fromtarget = "NULL"
 
-	try: alert.fromattacker = node.getElementsByTagName('cid:context')[0].getElementsByTagName('cid:fromAttacker')[0].firstChild.wholeText
+	try:
+		alert.fromattacker = node.getElementsByTagName('cid:context')[0].getElementsByTagName('cid:fromAttacker')[0].firstChild.wholeText
 	except:	alert.fromattacker = "NULL"
 
 	try:
@@ -267,6 +290,7 @@ def build_global(node):
 
 	return alert
 
+
 def build_sig(node):
 	signature = Signature()
 	signature.xml = node.toxml()	
@@ -276,22 +300,20 @@ def build_sig(node):
 	signature.sigtype = node.attributes['cid:type'].nodeValue
 	signature.subsig = node.getElementsByTagName('cid:subsigId')[0].firstChild.wholeText
 	
-	# Make marsCategory optional.
-	try: signature.marscategory = node.getElementsByTagName('marsCategory')[0].firstChild.wholeText
-	except: signature.marsCategory = 'NULL'
-	
-	# Separate sigDetails and description into their own fields.
-	
-	#try: signature.sigdetail = node.getElementsByTagName('cid:sigDetails')[0].firstChild.wholeText
-	#except: signature.sigdetail = node.attributes['description'].nodeValue
-	try: signature.sigdetail = node.getElementsByTagName('cid:sigDetails')[0].firstChild.wholeText
-	except: signature.sigdetail = "NULL"
-	try: signature.description = node.attributes['description'].nodeValue
-	except: signature.description = "NULL"
+	try:
+		signature.marsCategory = node.getElementsByTagName('marsCategory')[0].firstChild.wholeText
+	except:
+		signature.marsCategory = "NULL"
+
+	try:
+		signature.sigdetail = node.getElementsByTagName('cid:sigDetails')[0].firstChild.wholeText
+	except:
+		signature.sigdetail = node.attributes['description'].nodeValue
 
 	return signature
 
 def build_participant(node):
+
 	targetlist = node.getElementsByTagName('sd:target')
 	attacklist = node.getElementsByTagName('sd:attacker')
 	if len(attacklist) == 0:
@@ -306,8 +328,7 @@ def build_participant(node):
 			attacker.addr = attacklist[0].getElementsByTagName('sd:addr')[0].firstChild.wholeText
 			attacker.locality = attacklist[0].getElementsByTagName('sd:addr')[0].attributes['cid:locality'].nodeValue
 
-			#attacker.port = attacker.getElementsByTagName('sd:port')[0].firstChild.wholeText
-			attacker.port = attackerlist[0].getElementsByTagName('sd:port')[0].firstChild.wholeText
+			attacker.port = attacker.getElementsByTagName('sd:port')[0].firstChild.wholeText
 		except:
 			attacker.port = '0'
 	targetlist = []
@@ -322,14 +343,17 @@ def build_participant(node):
 			target.port = '0'
 		
 		targetlist.append(target)
+
 	return attacker, targetlist	
 
 def parse_alerts(xmldata):
+
 	doc = xml.dom.minidom.parseString(xmldata)
 	alertlist = doc.getElementsByTagName('sd:evIdsAlert')
 
 	alert_obj_list = []	
 	for alert in alertlist:
+	
 		alert_obj = build_global(alert)
 		
 		sig = alert.getElementsByTagName('sd:signature')
@@ -338,9 +362,12 @@ def parse_alerts(xmldata):
 		participants = alert.getElementsByTagName('sd:participants')
 		alert_obj.attacker, alert_obj.target_list = build_participant(participants[0])
 	
-		alert_obj_list.append(alert_obj)
+		alert_obj_list.append(alert_obj)	
 
+	
 #	for alerts in alert_obj_list:
 #		print "alert_time: %s, severity: %s, signature: %s, description: %s, attacker: %s, targets: %i" % (alerts.alert_time, 
-#					alerts.severity, alerts.signature.id, alerts.signature.sigdetail, alerts.attacker.addr, len(alerts.target_list) )	
+#					alerts.severity, alerts.signature.id, alerts.signature.sigdetail, alerts.attacker.addr, len(alerts.target_list) )
+	
 	return alert_obj_list
+	

@@ -1,0 +1,188 @@
+<view autoCancelInterval="90" isVisible="true" objectMode="SimpleDashboard" onunloadCancelJobs="true" refresh="-1" template="dashboard.html" stylesheet="$SPLUNK_HOME/etc/apps/Splunk_CiscoIPS/appserver/static/application.css">
+  <label>Cisco IPS Analyst</label>
+
+  <!-- Standard Header -->
+  <module name="AccountBar" layoutPanel="appHeader"/>
+  <module name="AppBar" layoutPanel="navigationHeader"/>
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="clearOnJobDispatch">False</param>
+    <param name="maxSize">1</param>
+  </module>
+  <module name="DashboardTitleBar" layoutPanel="viewHeader"/>
+  <module name="Message" layoutPanel="navigationHeader">
+    <param name="filter">splunk.search.job</param>
+    <param name="clearOnJobDispatch">True</param>
+    <param name="maxSize">1</param>
+    <param name="level">warn</param>
+  </module>
+
+  <!-- Select time range -->
+  <module name="TimeRangePicker" layoutPanel="panel_row1_col1">
+    <param name="label">Select time range</param>
+    <param name="default">Last 24 hours</param>
+    <param name="searchWhenChanged">True</param>
+    <param name="groupLabel">Select time range</param>
+
+    <!-- Table: IPS Events -->
+    <module name="HiddenSearch" autoRun="true" layoutPanel="panel_row1_col1" group="IPS Alert Details">
+      <param name="search">`cisco_ips` | transaction maxevents=2 maxspan=5m eventid | eval attack_count=if(isnotnull(summary_count),summary_count,1) | eval attacker=mvfilter(attacker!="0.0.0.0") | eval target=mvfilter(target!="0.0.0.0") | eval target_port=mvfilter(target_port!="0") | eval threat_rating=mvfilter(threat_rating!="0") | eval url="http://tools.cisco.com/security/center/viewIpsSignature.x?signatureId=".signature."&amp;signatureSubId=".subSigid | eval Time=strftime(_time, "%m/%d/%y %I:%M:%S %p") | fields + Time eventid hostId sig_type severity signature subSigid description attacker target target_port protocol risk_rating threat_rating context fromAttacker_details fromTarget_details sig_created sig_version attack_relevance_rating target_value_rating interface interface_group vlan attack_count actions url</param>
+      <module name="StaticContentSample" layoutPanel="panel_row1_col1">
+        <param name="text"><![CDATA[<img src="/static/app/Splunk_CiscoIPS/info.gif" class="info_icon" />]]> Click on an IPS alert below to view more details.</param>
+      </module>
+      <module name="JobProgressIndicator"/>
+      <module name="Paginator" layoutPanel="panel_row1_col1">
+        <param name="count">10</param>
+        <param name="entityName">results</param>
+        <module name="HiddenPostProcess">
+          <param name="search">table eventid Time severity description attacker target threat_rating attack_count | rename eventid AS "IPS Event ID" severity AS Severity description AS Description attacker AS Attacker target AS Target threat_rating AS "Threat Rating" attack_count AS Occurances</param>
+          <module name="SimpleResultsTable">
+            <param name="displayMenu">true</param>
+            <param name="drilldown">row</param>
+            <param name="displayRowNumbers">False</param>
+            <module name="ConvertToDrilldownSearch">
+              <module name="HiddenPostProcess">
+                <param name="search">table *</param>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">eventid</param>
+                  <param name="beforeLabel">Event ID:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">Time</param>
+                  <param name="beforeLabel">Time:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">hostId</param>
+                  <param name="beforeLabel">Host:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">sig_type</param>
+                  <param name="beforeLabel">Sig Type:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">severity</param>
+                  <param name="beforeLabel">Severity:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">signature</param>
+                  <param name="beforeLabel">Signature:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">subSigid</param>
+                  <param name="beforeLabel">Sub-Signature:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">sig_created</param>
+                  <param name="beforeLabel">Sig Created:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">sig_version</param>
+                  <param name="beforeLabel">Sig Version:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">description</param>
+                  <param name="beforeLabel">Description:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">attacker</param>
+                  <param name="beforeLabel">Attacker:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">target</param>
+                  <param name="beforeLabel">Target:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">target_port</param>
+                  <param name="beforeLabel">Target Port:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">protocol</param>
+                  <param name="beforeLabel">Protocol:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">risk_rating</param>
+                  <param name="beforeLabel">Risk Rating:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">threat_rating</param>
+                  <param name="beforeLabel">Threat Rating:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">attack_relevance_rating</param>
+                  <param name="beforeLabel">Attack Relevance Rating:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">target_value_rating</param>
+                  <param name="beforeLabel">Target Value Rating:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">interface</param>
+                  <param name="beforeLabel">Interface:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">interface_group</param>
+                  <param name="beforeLabel">Interface Group:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">vlan</param>
+                  <param name="beforeLabel">VLAN:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">context</param>
+                  <param name="beforeLabel">Context:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">attack_count</param>
+                  <param name="beforeLabel">Attack Count:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">actions</param>
+                  <param name="beforeLabel">Actions:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">fromAttacker_details</param>
+                  <param name="beforeLabel">From Attacker:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">fromTarget_details</param>
+                  <param name="beforeLabel">From Target:</param>
+                </module>
+                <module name="SingleValue">
+                  <param name="additionalClass">ipsEventDetails</param>
+                  <param name="field">url</param>
+                  <param name="beforeLabel">Sig Details:</param>
+                </module>
+              </module> <!-- End HiddenPostProcess -->
+            </module> <!-- End ConvertToDrilldownSearch -->
+          </module> <!-- End SimpleResultsTable -->
+        </module> <!-- End HiddenPostProcess -->
+      </module> <!-- End Paginator -->
+    </module> <!-- End HiddenSearch -->
+  </module> <!-- End TimeRangePicker -->
+</view>

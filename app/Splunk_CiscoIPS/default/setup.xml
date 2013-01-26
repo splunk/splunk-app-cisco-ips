@@ -1,0 +1,35 @@
+<setup>
+<block title="Splunk for Cisco IPS">
+	  <text>Welcome to the Splunk for Cisco IPS Setup.
+	  <![CDATA[<br>]]>Use this setup screen to deploy and configure the Cisco IPS add-on into your Splunk deployment and configure a scripted input to collect the data from a Cisco IPS device in real-time. You can re-run this setup program at any time from the Splunk Manager to add additional data inputs for other Cisco IPS devices.
+	  <![CDATA[<br><br>]]>To remove an existing Cisco IPS input go to <![CDATA[<a href="/manager/Splunk_CiscoIPS/data/inputs/script">Manager/Data Inputs/Script</a>]]>.
+	  </text>
+</block>
+
+
+<block title="Add new Cisco IPS Sensor" endpoint="admin/cisco_ips_setup" entity="cisco_ips_setup_settings">
+	<input field="cisco_ips_sensor_ip">
+		 <label>Hostname or IP address</label>
+		 <type>text</type>
+	</input>
+
+	<input field="cisco_ips_sensor_username">
+		<label>Username</label>
+		<type>text</type>
+	</input>
+
+	<input field="cisco_ips_sensor_password">
+		<label>Password</label>
+		<type>password</type>
+	</input>
+
+	<input field="cisco_ips_sensor_interval">
+		<label>Polling interval (in seconds). Enter 0 to poll continously.</label>
+		<type>text</type>
+	</input>
+</block>
+
+<block title="Warning">
+	<text>Submitting this form can take a long time.  Please be patient and wait for it to complete before navigating away from this page.</text>
+</block>
+</setup>

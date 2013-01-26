@@ -1,0 +1,24 @@
+.ipsEventDetails { 
+	background-image:none;
+	background-color:transparent;
+	width:auto;
+	font-size:12px;
+	font-weight:normal;
+	text-align:left;
+	color:#000;
+	padding-bottom: 2px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	min-width: 30%;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	-moz-box-shadow:none;
+	-webkit-box-shadow:none;
+	box-shadow:none;
+}
+
+.singleLabel {
+	font-weight:bold;
+}

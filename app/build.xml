@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Splunk_CiscoIPS" default="package">
+	<property name="APP" value="Splunk_CiscoIPS"/>
+	<property name="VERSION" value="3.0.0"/>
+
+	<property name="build.dir" value="build"/>
+	<property name="dist.file" value="${build.dir}/dist/${APP}-${VERSION}.tar.gz"/>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="package" depends="build">
+		<mkdir dir="${build.dir}/dist" />
+		<tar destfile="${dist.file}" longfile="gnu" compression="gzip">
+			<tarfileset dir="${build.dir}" filemode="755" username="splunk" group="splunk">
+				<include name="${APP}/**"/>
+			</tarfileset>
+		</tar>
+	</target>
+
+	<target name="build">
+		<mkdir dir="${build.dir}/${APP}"/>
+
+		<copy todir="${build.dir}/${APP}" filtering="off" verbose="on">
+			<fileset dir="${APP}">
+				<exclude name="**/.*" />
+				<exclude name="local/.*" />
+				<exclude name="**/*-gist" />
+				<exclude name="**/*.xcf" />
+				<exclude name="**/*.d/**" />
+				<exclude name="default/app.conf" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build.dir}/${APP}/default" file="${APP}/default/app.conf" verbose="on">
+			<filterset>
+				<filter token="VERSION" value="${VERSION}" />
+			</filterset>
+		</copy>
+
+		<concat destfile="${build.dir}/${APP}/default/eventtypes.conf" fixlastline="yes">
+			<fileset dir="${APP}/default/eventtypes.d" includes="*.conf"/>
+		</concat>
+		<echo>[concat] Created ${build.dir}/${APP}/default/eventtypes.conf</echo>
+
+		<concat destfile="${build.dir}/${APP}/default/props.conf" fixlastline="yes">
+			<fileset dir="${APP}/default/props.d" includes="*.conf"/>
+		</concat>
+		<echo>[concat] Created ${build.dir}/${APP}/default/props.conf</echo>
+
+		<concat destfile="${build.dir}/${APP}/default/transforms.conf" fixlastline="yes">
+			<fileset dir="${APP}/default/transforms.d" includes="*.conf"/>
+		</concat>
+		<echo>[concat] Created ${build.dir}/${APP}/default/transforms.conf</echo>
+
+		<concat destfile="${build.dir}/${APP}/default/tags.conf" fixlastline="yes">
+			<fileset dir="${APP}/default/tags.d" includes="*.conf"/>
+		</concat>
+		<echo>[concat] Created ${build.dir}/${APP}/default/tags.conf</echo>
+
+	</target>
+
+</project>

@@ -5,6 +5,7 @@
 
 	<property name="build.dir" value="build"/>
 	<property name="dist.file" value="${build.dir}/dist/${APP}-${VERSION}.tar.gz"/>
+	<buildnumber/>
 
 	<target name="clean">
 		<delete dir="${build.dir}"/>
@@ -34,6 +35,9 @@
 		</copy>
 
 		<copy todir="${build.dir}/${APP}/default" file="${APP}/default/app.conf" verbose="on">
+			<filterset>
+				<filter token="BUILDNUMBER" value="${build.number}"/>
+			</filterset>
 			<filterset>
 				<filter token="VERSION" value="${VERSION}" />
 			</filterset>
